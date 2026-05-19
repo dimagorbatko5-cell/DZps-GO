@@ -11,3 +11,21 @@ func main() {
 	
 	fmt.Println("Курс EURO -> RUB: ", euroInRub)
 }
+
+func getuserInPut() (float64, string, string) {
+	var amount float64
+	var fromCurrency string
+	var toCurrency string
+
+	fmt.Print("Введите сумму: ")
+	fmt.Scan(&amount)
+	fmt.Print("Из валюты: ")
+	fmt.Scan(&fromCurrency)
+	fmt.Print("В валюту: ")
+	fmt.Scan(&toCurrency)
+	return amount, fromCurrency, toCurrency
+}
+
+func convertCurrency(amount float64, fromCurrency string,toCurrency string) {
+
+}
