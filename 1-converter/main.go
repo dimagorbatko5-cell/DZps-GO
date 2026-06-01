@@ -27,9 +27,9 @@ func getCurrency(message string) string {
 		fmt.Scan(&currency)
 		if currency == "USD" || currency == "EUR" || currency == "RUB" {
 			return currency
-		}
-		fmt.Println(`Ошибка: такой валюты нет. 
-		Введите одну из трех USD / EUR / RUB.`)
+			}
+	fmt.Println(`Ошибка: такой валюты нет. 
+Введите одну из трех USD / EUR / RUB.`)
 	}
 }
 
