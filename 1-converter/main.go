@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
-	// "golang.org/x/text/message"
 )
 
 const usdInEuro float64 = 0.86
 const usdInRUB float64 = 72.76
 const euroInRUB float64 = usdInRUB / usdInEuro
+
+var currencyRates = map[string]float64{
+	"USD": 1.0,
+	"EUR": 1/usdInEuro,
+	"RUB": 1/usdInRUB,
+}
 
 func main() {
 	fmt.Println("___ Конвертер валют ___")
@@ -24,7 +29,11 @@ func getCurrency(message string) string {
 	for {
 		fmt.Println(message)
 		fmt.Print("Доступные варианты: USD, EUR, RUB: ")
-		fmt.Scan(&currency)
+		_, err := fmt.Scan(&currency)
+		if err != nil {
+			fmt.Println("Ошибка ввода, попробуйте еще раз.")
+			continue
+		}
 		if currency == "USD" || currency == "EUR" || currency == "RUB" {
 			return currency
 			}
@@ -38,7 +47,11 @@ func getAmount() float64 {
 	
 	for{
 		fmt.Print("Введте сумму: ")
-		fmt.Scan(&amount)
+		_, err := fmt.Scan(&amount)
+		if err != nil {
+			fmt.Println("Ошибка: введите корректное число.")
+			continue
+		}
 		
 		if amount > 0 {
 			return amount
@@ -51,30 +64,7 @@ func convertCurrency(amount float64, fromCurrency string,toCurrency string) floa
 		if fromCurrency == toCurrency {
 			return amount
 		}
-		switch fromCurrency {
-		case "USD":
-			if toCurrency == "EUR" {
-				return amount * usdInEuro
-			}
-			if toCurrency == "RUB" {
-				return amount * usdInRUB
-			}
-			
-		case "EUR":
-			if toCurrency == "USD" {
-				return amount / usdInEuro
-			}
-			if toCurrency == "RUB" {
-				return amount * euroInRUB
-			}
-			
-		case "RUB":
-			if toCurrency == "USD" {
-				return amount / usdInRUB
-			}
-			if toCurrency == "EUR" {
-				return amount / euroInRUB
-			}
-		}
-		return 0
+		fromRate := currencyRates[fromCurrency]
+		toRate := currencyRates[toCurrency]
+		return amount * fromRate / toRate
 }
