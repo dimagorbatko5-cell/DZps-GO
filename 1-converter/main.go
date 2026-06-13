@@ -2,79 +2,77 @@ package main
 
 import (
 	"fmt"
-	// "golang.org/x/text/message"
 )
 
-const usdInEuro float64 = 0.86
-const usdInRUB float64 = 72.76
-const euroInRUB float64 = usdInRUB / usdInEuro
+const (
+	usdInEuro float64 = 0.86
+	usdInRUB  float64 = 72.76
+	euroInRUB float64 = usdInRUB / usdInEuro
+)
+
+var currencyRates = map[string]float64{
+	"USD": 1.0,
+	"EUR": 1 / usdInEuro,
+	"RUB": 1 / usdInRUB,
+}
 
 func main() {
 	fmt.Println("___ Конвертер валют ___")
 	fromCurrency := getCurrency("Введите исходную валюту")
 	amount := getAmount()
 	toCurrency := getCurrency("Введите целевую валюту")
-	result := convertCurrency(amount, fromCurrency, toCurrency)
+
+	// Передаём map параметром (по значению)
+	result := convertCurrency(amount, fromCurrency, toCurrency, currencyRates)
 	fmt.Printf("%.2f %s = %.2f %s\n", amount, fromCurrency, result, toCurrency)
 }
 
 func getCurrency(message string) string {
 	var currency string
-	
 	for {
 		fmt.Println(message)
 		fmt.Print("Доступные варианты: USD, EUR, RUB: ")
-		fmt.Scan(&currency)
-		if currency == "USD" || currency == "EUR" || currency == "RUB" {
+		_, err := fmt.Scan(&currency)
+		if err != nil {
+			fmt.Println("Ошибка ввода, попробуйте еще раз.")
+			continue
+	}
+	if currency == "USD" || currency == "EUR" || currency == "RUB" {
 			return currency
-			}
-	fmt.Println(`Ошибка: такой валюты нет. 
+	}
+	fmt.Println(`Ошибка: такой валюты нет.
 Введите одну из трех USD / EUR / RUB.`)
 	}
 }
 
 func getAmount() float64 {
 	var amount float64
-	
-	for{
-		fmt.Print("Введте сумму: ")
-		fmt.Scan(&amount)
-		
-		if amount > 0 {
-			return amount
-		}
-		 fmt.Println("Ошибка: сумма должна быть больше 0.")
+	for {
+		fmt.Print("Введите сумму: ")
+		_, err := fmt.Scan(&amount)
+		if err != nil {
+			fmt.Println("Ошибка: введите корректное число.")
+			continue
 	}
-}	
-	
-func convertCurrency(amount float64, fromCurrency string,toCurrency string) float64 {
-		if fromCurrency == toCurrency {
-			return amount
-		}
-		switch fromCurrency {
-		case "USD":
-			if toCurrency == "EUR" {
-				return amount * usdInEuro
-			}
-			if toCurrency == "RUB" {
-				return amount * usdInRUB
-			}
-			
-		case "EUR":
-			if toCurrency == "USD" {
-				return amount / usdInEuro
-			}
-			if toCurrency == "RUB" {
-				return amount * euroInRUB
-			}
-			
-		case "RUB":
-			if toCurrency == "USD" {
-				return amount / usdInRUB
-			}
-			if toCurrency == "EUR" {
-				return amount / euroInRUB
-			}
-		}
-		return 0
+	if amount > 0 {
+		return amount
+	}
+	fmt.Println("Ошибка: сумма должна быть больше 0.")
+	}
+}
+
+// Функция теперь самодостаточна: получает все данные через параметры
+func convertCurrency(
+	amount float64,
+	fromCurrency, toCurrency string,
+	rates map[string]float64, // передаём map по значению
+) float64 {
+	if fromCurrency == toCurrency {
+		return amount
+	}
+
+	fromRate := rates[fromCurrency]
+	toRate := rates[toCurrency]
+
+	return amount * fromRate / toRate
 }
