@@ -22,8 +22,8 @@ func main() {
 	amount := getAmount()
 	toCurrency := getCurrency("Введите целевую валюту")
 
-	// Передаём map параметром (по значению)
-	result := convertCurrency(amount, fromCurrency, toCurrency, currencyRates)
+	// Передаём указатель на map
+	result := convertCurrency(amount, fromCurrency, toCurrency, &currencyRates)
 	fmt.Printf("%.2f %s = %.2f %s\n", amount, fromCurrency, result, toCurrency)
 }
 
@@ -55,24 +55,26 @@ func getAmount() float64 {
 			continue
 	}
 	if amount > 0 {
-		return amount
+			return amount
 	}
 	fmt.Println("Ошибка: сумма должна быть больше 0.")
 	}
 }
 
-// Функция теперь самодостаточна: получает все данные через параметры
+// Функция теперь принимает указатель на map[string]float64
 func convertCurrency(
 	amount float64,
-	fromCurrency, toCurrency string,
-	rates map[string]float64, // передаём map по значению
+	fromCurrency string,
+	toCurrency string,
+	rates *map[string]float64, // указатель на map
 ) float64 {
 	if fromCurrency == toCurrency {
 		return amount
 	}
 
-	fromRate := rates[fromCurrency]
-	toRate := rates[toCurrency]
+	// Разыменование указателя для доступа к map
+	rateFrom := (*rates)[fromCurrency]
+	rateTo := (*rates)[toCurrency]
 
-	return amount * fromRate / toRate
+	return amount * rateFrom / rateTo
 }
