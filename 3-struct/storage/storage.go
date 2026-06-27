@@ -3,8 +3,9 @@ package storage
 import (
 	"encoding/json"
 	"fmt"
-	"dimagorbatko5-cell/DZps-GO/3-struct/bins"   // ← замени demo на имя своего модуля (см. ниже)
-	"dimagorbatko5-cell/DZps-GO/3-struct/file"
+
+	"dimagorbatko5-cell/DZps-GO/3-struct/bins"
+	"dimagorbatko5-cell/DZps-GO/3-struct/files"
 )
 
 func Save(list bins.BinList, fileName string) {
@@ -13,12 +14,15 @@ func Save(list bins.BinList, fileName string) {
 		fmt.Println("Ошибка сериализации:", err)
 		return
 	}
-	file.WriteFile(data, fileName)
+	err = files.WriteFile(data, fileName)
+	if err != nil {
+		fmt.Println("Ошибка записи:", err)
+	}
 }
 
 func Load(fileName string) (bins.BinList, error) {
 	var list bins.BinList
-	data, err := file.ReadFile(fileName)
+	data, err := files.ReadFile(fileName)
 	if err != nil {
 		return list, err
 	}
